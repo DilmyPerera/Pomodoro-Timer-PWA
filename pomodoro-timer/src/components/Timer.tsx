@@ -202,7 +202,7 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
     // ─────────────────────────────────────────────────────────────
     return (
         // Full-screen backdrop
-        <div style={{
+        <div className="resp-timer-backdrop" style={{
             position: 'fixed', inset: 0,
             background: t.bg,
             transition: 'background 0.8s ease',
@@ -237,7 +237,7 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
             )}
 
             {/* ── Timer Card ── */}
-            <div style={{
+            <div className="resp-timer-card" style={{
                 background: t.card,
                 border: `2px solid ${t.border}`,
                 boxShadow: t.shadow,
@@ -254,7 +254,7 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
 
                 {/* Mascot + motivational message */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
-                    <div style={{
+                    <div className="resp-mascot" style={{
                         width: 100, height: 108,
                         flexShrink: 0,
                         position: 'relative',
@@ -314,7 +314,7 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
                 </div>
 
                 {/* Mode buttons (cleaner labels during focus) */}
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div className="resp-mode-buttons" style={{ display: 'flex', gap: 8 }}>
                     {(['work', 'short', 'long'] as const).map(m => {
                         const btnColors = m === 'work' ? t.btnWork : m === 'short' ? t.btnShort : t.btnLong;
                         const labels = { work: 'Focus', short: 'Short Break', long: 'Long Break' };
@@ -322,6 +322,7 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
                         return (
                             <button
                                 key={m}
+                                className="resp-mode-btn"
                                 onClick={() => changeMode(m)}
                                 style={{
                                     padding: '0.4rem 0.95rem',
@@ -376,8 +377,9 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
                 )}
 
                 {/* Controls */}
-                <div style={{ display: 'flex', gap: 14 }}>
+                <div className="resp-controls" style={{ display: 'flex', gap: 14 }}>
                     <button
+                        className="resp-start-btn"
                         onClick={toggleTimer}
                         style={{
                             padding: '0.85rem 2.3rem',
@@ -400,6 +402,7 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
                         {isActive ? '⏸ Pause' : '▶ Start'}
                     </button>
                     <button
+                        className="resp-reset-btn"
                         onClick={resetTimer}
                         style={{
                             padding: '0.85rem 1.8rem',
@@ -423,6 +426,7 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
 
             {/* End Session Button - Page Level Bottom Corner */}
             <button
+                className="resp-end-btn"
                 onClick={() => {
                     if (onEndSession) {
                         onEndSession({

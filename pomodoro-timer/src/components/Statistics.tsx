@@ -67,7 +67,7 @@ export default function Statistics({
             overflow: 'hidden',
         }}>
             {/* ── Main Stats Card ── */}
-            <div style={{
+            <div className="resp-stats-card" style={{
                 background: t.card,
                 border: `2px solid ${t.border}`,
                 boxShadow: t.shadow,
@@ -85,7 +85,7 @@ export default function Statistics({
             } as CSSProperties}>
                 {/* Header */}
                 <div style={{ textAlign: 'center' }}>
-                    <h1 style={{
+                    <h1 className="resp-stats-title" style={{
                         margin: '0 0 0.3rem 0',
                         fontSize: '1.5rem',
                         fontWeight: 800,

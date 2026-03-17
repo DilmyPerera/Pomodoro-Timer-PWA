@@ -8,7 +8,7 @@ interface HeaderProps {
 
 export default function Header({ userName, isDark, onToggleTheme }: HeaderProps) {
     return (
-        <header style={{
+        <header className="resp-header" style={{
             position: 'fixed',
             top: 0,
             left: 0,
@@ -35,12 +35,12 @@ export default function Header({ userName, isDark, onToggleTheme }: HeaderProps)
                 alignItems: 'center',
                 gap: '0.8rem',
             }}>
-                <span style={{
+                <span className="resp-header-icon" style={{
                     fontSize: '1.8rem',
                 }}>
                     {isDark ? '🌙' : '☁️'}
                 </span>
-                <h2 style={{
+                <h2 className="resp-header-title" style={{
                     margin: 0,
                     fontSize: '1.3rem',
                     fontWeight: 700,
@@ -54,6 +54,7 @@ export default function Header({ userName, isDark, onToggleTheme }: HeaderProps)
 
             {/* Right: Theme toggle */}
             <button
+                className="resp-header-toggle"
                 onClick={onToggleTheme}
                 title={isDark ? 'Switch to light mode ☀️' : 'Switch to dark mode 🌙'}
                 style={{

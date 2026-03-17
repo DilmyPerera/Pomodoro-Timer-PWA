@@ -53,7 +53,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
                 <ellipse cx="88" cy="35" rx="20" ry="15" fill="white" fillOpacity="0.85" />
             </svg>
 
-            <div style={{
+            <div className="resp-login-card" style={{
                 background: 'rgba(255,255,255,0.88)',
                 border: '2px solid #AEE2FF',
                 boxShadow: '0 8px 48px rgba(130,190,240,0.45)',
@@ -69,7 +69,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
                 position: 'relative',
             }}>
                 {/* Title */}
-                <h1 style={{
+                <h1 className="resp-login-title" style={{
                     margin: 0,
                     fontSize: '1.68rem',
                     fontWeight: 800,

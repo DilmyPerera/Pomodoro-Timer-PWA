@@ -75,3 +75,113 @@ body {
     transform: scale(1.28);
   }
 }
+
+/* ── Mobile responsive ── */
+@media (max-width: 480px) {
+  .resp-timer-backdrop {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    overflow-y: auto !important;
+    padding-top: 5.5rem !important;
+    padding-bottom: 2rem !important;
+  }
+  .resp-header {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .resp-header-title {
+    font-size: 1rem !important;
+  }
+
+  .resp-header-icon {
+    font-size: 1.3rem !important;
+  }
+
+  .resp-header-toggle {
+    padding: 0.4rem 0.75rem !important;
+    font-size: 1rem !important;
+  }
+
+  .resp-login-card {
+    padding: 2rem 1.4rem !important;
+    border-radius: 1.8rem !important;
+    gap: 1.2rem !important;
+  }
+
+  .resp-login-title {
+    font-size: 1.3rem !important;
+  }
+
+  .resp-timer-card {
+    padding: 1.2rem 1rem !important;
+    min-width: unset !important;
+    width: calc(100vw - 2rem) !important;
+    gap: 1rem !important;
+    margin-top: 0 !important;
+  }
+
+  .resp-mascot {
+    width: 72px !important;
+    height: 78px !important;
+  }
+
+  .resp-mode-buttons {
+    gap: 5px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .resp-mode-btn {
+    padding: 0.3rem 0.6rem !important;
+    font-size: 0.74rem !important;
+  }
+
+  .resp-controls {
+    gap: 10px !important;
+  }
+
+  .resp-start-btn {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 1rem !important;
+  }
+
+  .resp-reset-btn {
+    padding: 0.75rem 1.1rem !important;
+    font-size: 0.95rem !important;
+  }
+
+  .resp-end-btn {
+    position: static !important;
+    bottom: auto !important;
+    right: auto !important;
+    align-self: center !important;
+    margin-top: 0.5rem !important;
+    padding: 0.55rem 0.9rem !important;
+    font-size: 0.82rem !important;
+    z-index: auto !important;
+  }
+
+  .resp-stats-card {
+    padding: 1.5rem 1.2rem !important;
+    width: calc(100vw - 2rem) !important;
+    gap: 1rem !important;
+    border-radius: 1.5rem !important;
+  }
+
+  .resp-stats-title {
+    font-size: 1.2rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .resp-header-title {
+    font-size: 0.88rem !important;
+  }
+
+  .resp-mode-btn {
+    padding: 0.28rem 0.5rem !important;
+    font-size: 0.7rem !important;
+  }
+}
