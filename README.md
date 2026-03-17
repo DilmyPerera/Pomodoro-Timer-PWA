@@ -57,3 +57,13 @@ npm install
 
 # Run development server
 npm run dev
+```
+
+## 📦 Build for Production
+``` bash
+npm run build
+npm run start
+```
+
+## 📄 License
+This project is open source and available under the MIT License.
