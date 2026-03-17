@@ -1,10 +1,10 @@
 
-import Timer from '@/components/Timer';
+import AppContainer from '@/components/AppContainer';
 
 export default function Home() {
   return (
     <main>
-      <Timer />
+      <AppContainer />
     </main>
   );
 }

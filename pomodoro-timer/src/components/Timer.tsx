@@ -97,38 +97,16 @@ function Sparkle({ style }: { style?: CSSProperties }) {
 // ─────────────────────────────────────────────────────────────────
 // Main Component
 // ─────────────────────────────────────────────────────────────────
-export default function Timer() {
+export default function Timer({ isDark: initialIsDark }: { isDark: boolean }) {
     const [minutes, setMinutes] = useState(25);
     const [seconds, setSeconds] = useState(0);
     const [isActive, setIsActive] = useState(false);
     const [mode, setMode] = useState<'work' | 'short' | 'long'>('work');
     const [pomodoroCount, setPomodoroCount] = useState(0);
-    const [isDark, setIsDark] = useState(false);
     const [msgIdx, setMsgIdx] = useState(0);
 
-    // ── Detect system preference + localStorage override ──
-    useEffect(() => {
-        const saved = localStorage.getItem('pomodoroTheme');
-        if (saved !== null) {
-            setIsDark(saved === 'dark');
-        } else {
-            setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
-        }
-        const mq = window.matchMedia('(prefers-color-scheme: dark)');
-        const handler = (e: MediaQueryListEvent) => {
-            if (!localStorage.getItem('pomodoroTheme')) setIsDark(e.matches);
-        };
-        mq.addEventListener('change', handler);
-        return () => mq.removeEventListener('change', handler);
-    }, []);
-
-    const toggleTheme = () => {
-        setIsDark(prev => {
-            const next = !prev;
-            localStorage.setItem('pomodoroTheme', next ? 'dark' : 'light');
-            return next;
-        });
-    };
+    // Use the isDark prop directly (no theme toggle needed here)
+    const isDark = initialIsDark;
 
     // ── Derived theme + messages ──
     const t = isDark ? KUROMI : CINNA;
@@ -251,38 +229,8 @@ export default function Timer() {
                 minWidth: 320, maxWidth: '90vw',
                 position: 'relative',
                 transition: 'all 0.7s ease',
+                marginTop: '5rem',
             }}>
-
-                {/* Title + theme toggle */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                    <h1 style={{
-                        margin: 0,
-                        fontSize: '1.2rem',
-                        fontWeight: 800,
-                        color: t.title,
-                        letterSpacing: isDark ? '0.08em' : '0.03em',
-                    }}>
-                        {isDark ? '🌙 Pomodoro' : '☁️ Pomodoro'}
-                    </h1>
-                    <button
-                        onClick={toggleTheme}
-                        title={isDark ? 'Switch to Cinnamoroll ☁️' : 'Switch to Kuromi 🌙'}
-                        style={{
-                            background: t.toggleBg,
-                            color: t.accent,
-                            border: `1.5px solid ${t.toggleBorder}`,
-                            borderRadius: '9999px',
-                            padding: '0.3rem 0.9rem',
-                            fontSize: '1rem',
-                            cursor: 'pointer',
-                            fontWeight: 700,
-                            transition: 'all 0.3s ease',
-                            boxShadow: isDark ? `0 0 10px ${t.accent}44` : 'none',
-                        }}
-                    >
-                        {isDark ? '☀️' : '🌙'}
-                    </button>
-                </div>
 
                 {/* Mascot + motivational message */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem' }}>
