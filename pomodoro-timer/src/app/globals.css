@@ -81,10 +81,12 @@ body {
   .resp-timer-backdrop {
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: flex-start !important;
+    justify-content: center !important;
     overflow-y: auto !important;
-    padding-top: 5.5rem !important;
-    padding-bottom: 2rem !important;
+    box-sizing: border-box !important;
+    min-height: 100dvh !important;
+    padding-top: 5rem !important;
+    padding-bottom: 1rem !important;
   }
 
   .resp-header {
@@ -163,7 +165,7 @@ body {
     width: fit-content !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    margin-top: 0.5rem !important;
+    margin-top: 0.8rem !important;
     padding: 0.55rem 0.9rem !important;
     font-size: 0.82rem !important;
     z-index: auto !important;
