@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,14 +14,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pomodoro Timer",
-  description: "A cute Pomodoro timer with Kuromi & Cinnamoroll themes",
+  title: "Pomodoro Focus",
+  description: "Simple Pomodoro timer to stay focused - works offline",
+  manifest: "/manifest.webmanifest",
 };
 
 export const viewport: Viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  themeColor: "#ef4444",
 };
 
 export default function RootLayout({
@@ -33,6 +36,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ServiceWorkerRegister />
         {children}
       </body>
     </html>

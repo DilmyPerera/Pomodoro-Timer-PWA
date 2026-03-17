@@ -109,11 +109,11 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
     const [mode, setMode] = useState<'work' | 'short' | 'long'>('work');
     const [pomodoroCount, setPomodoroCount] = useState(0);
     const [msgIdx, setMsgIdx] = useState(0);
+    const [isOnline, setIsOnline] = useState(true);
 
     // Session tracking
     const [totalStudyMinutes, setTotalStudyMinutes] = useState(0);
     const [totalBreakMinutes, setTotalBreakMinutes] = useState(0);
-    const [sessionStartTime] = useState(Date.now());
 
     // Use the isDark prop directly (no theme toggle needed here)
     const isDark = initialIsDark;
@@ -131,11 +131,25 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
         return () => clearInterval(interval);
     }, [themeKey, mode, messages.length]);
 
+    // ── Online/offline indicator ──
+    useEffect(() => {
+        const updateOnline = () => setIsOnline(navigator.onLine);
+        updateOnline();
+        window.addEventListener('online', updateOnline);
+        window.addEventListener('offline', updateOnline);
+        return () => {
+            window.removeEventListener('online', updateOnline);
+            window.removeEventListener('offline', updateOnline);
+        };
+    }, []);
+
     // ── Countdown ──
     const displayTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
     useEffect(() => {
         if (!isActive) return;
+        // Note: setInterval can be throttled/paused in inactive tabs.
+        // PWA offline caching still works, but timer precision may drift in background.
         const interval = setInterval(() => {
             if (seconds === 0) {
                 if (minutes === 0) {
@@ -234,6 +248,27 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
                     <span style={{ position: 'absolute', bottom: '32%', left: '6%', fontSize: '1rem', opacity: 0.18, animation: 'cfloat 7s ease-in-out infinite 2s' }}>🌸</span>
                     <span style={{ position: 'absolute', top: '22%', left: '8%', fontSize: '0.9rem', opacity: 0.15, animation: 'cfloat 8s ease-in-out infinite 0.5s' }}>🌟</span>
                 </>
+            )}
+
+            {!isOnline && (
+                <div style={{
+                    position: 'fixed',
+                    top: '5.8rem',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: isDark ? 'rgba(22,18,38,0.92)' : 'rgba(255,255,255,0.92)',
+                    color: isDark ? '#E0AAFF' : '#b91c1c',
+                    border: `1px solid ${isDark ? '#9B5DE5' : '#ef4444'}`,
+                    borderRadius: '9999px',
+                    padding: '0.25rem 0.7rem',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    zIndex: 120,
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                }}>
+                    Offline
+                </div>
             )}
 
             {/* ── Timer Card ── */}
