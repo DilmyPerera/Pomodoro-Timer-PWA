@@ -114,20 +114,20 @@ export default function Statistics({
                     <div style={{
                         background: isDark ? 'rgba(155,93,229,0.1)' : 'rgba(74,171,247,0.08)',
                         border: `1px solid ${t.accent}55`,
-                        borderRadius: '1.2rem',
-                        padding: '1.5rem',
+                        borderRadius: '1rem',
+                        padding: '1rem',
                         textAlign: 'center',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '0.8rem',
+                        gap: '0.4rem',
                     } as CSSProperties}>
                         <div style={{
-                            fontSize: '1.8rem',
+                            fontSize: '1.4rem',
                         }}>
                             ⏱️
                         </div>
                         <div style={{
-                            fontSize: 'clamp(1.2rem, 5vw, 1.8rem)',
+                            fontSize: 'clamp(1rem, 4vw, 1.3rem)',
                             fontWeight: 700,
                             color: t.title,
                             lineHeight: 1,
@@ -135,7 +135,7 @@ export default function Statistics({
                             {studyHours}h {studyMins}m
                         </div>
                         <div style={{
-                            fontSize: '0.8rem',
+                            fontSize: '0.72rem',
                             color: t.muted,
                             fontWeight: 600,
                         }}>
@@ -147,20 +147,20 @@ export default function Statistics({
                     <div style={{
                         background: isDark ? 'rgba(155,93,229,0.1)' : 'rgba(74,171,247,0.08)',
                         border: `1px solid ${t.accent}55`,
-                        borderRadius: '1.2rem',
-                        padding: '1.5rem',
+                        borderRadius: '1rem',
+                        padding: '1rem',
                         textAlign: 'center',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '0.8rem',
+                        gap: '0.4rem',
                     } as CSSProperties}>
                         <div style={{
-                            fontSize: '1.8rem',
+                            fontSize: '1.4rem',
                         }}>
                             ☕
                         </div>
                         <div style={{
-                            fontSize: 'clamp(1.2rem, 5vw, 1.8rem)',
+                            fontSize: 'clamp(1rem, 4vw, 1.3rem)',
                             fontWeight: 700,
                             color: t.title,
                             lineHeight: 1,
@@ -168,7 +168,7 @@ export default function Statistics({
                             {breakHours}h {breakMins}m
                         </div>
                         <div style={{
-                            fontSize: '0.8rem',
+                            fontSize: '0.72rem',
                             color: t.muted,
                             fontWeight: 600,
                         }}>
@@ -180,20 +180,20 @@ export default function Statistics({
                     <div style={{
                         background: isDark ? 'rgba(155,93,229,0.1)' : 'rgba(74,171,247,0.08)',
                         border: `1px solid ${t.accent}55`,
-                        borderRadius: '1.2rem',
-                        padding: '1.5rem',
+                        borderRadius: '1rem',
+                        padding: '1rem',
                         textAlign: 'center',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '0.8rem',
+                        gap: '0.4rem',
                     } as CSSProperties}>
                         <div style={{
-                            fontSize: '1.8rem',
+                            fontSize: '1.4rem',
                         }}>
                             ⏳
                         </div>
                         <div style={{
-                            fontSize: 'clamp(1.2rem, 5vw, 1.8rem)',
+                            fontSize: 'clamp(1rem, 4vw, 1.3rem)',
                             fontWeight: 700,
                             color: t.title,
                             lineHeight: 1,
@@ -201,7 +201,7 @@ export default function Statistics({
                             {totalHours}h {totalMins}m
                         </div>
                         <div style={{
-                            fontSize: '0.8rem',
+                            fontSize: '0.72rem',
                             color: t.muted,
                             fontWeight: 600,
                         }}>
@@ -213,20 +213,20 @@ export default function Statistics({
                     <div style={{
                         background: isDark ? 'rgba(155,93,229,0.1)' : 'rgba(74,171,247,0.08)',
                         border: `1px solid ${t.accent}55`,
-                        borderRadius: '1.2rem',
-                        padding: '1.5rem',
+                        borderRadius: '1rem',
+                        padding: '1rem',
                         textAlign: 'center',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '0.8rem',
+                        gap: '0.4rem',
                     } as CSSProperties}>
                         <div style={{
-                            fontSize: '1.8rem',
+                            fontSize: '1.4rem',
                         }}>
                             🍅
                         </div>
                         <div style={{
-                            fontSize: 'clamp(1.2rem, 5vw, 1.8rem)',
+                            fontSize: 'clamp(1rem, 4vw, 1.3rem)',
                             fontWeight: 700,
                             color: t.title,
                             lineHeight: 1,
@@ -234,7 +234,7 @@ export default function Statistics({
                             {completedPomodoros}
                         </div>
                         <div style={{
-                            fontSize: '0.8rem',
+                            fontSize: '0.72rem',
                             color: t.muted,
                             fontWeight: 600,
                         }}>
@@ -246,14 +246,14 @@ export default function Statistics({
                 {/* Motivational Message */}
                 <div style={{
                     background: isDark ? 'rgba(155,93,229,0.15)' : 'rgba(74,171,247,0.12)',
-                    borderRadius: '1rem',
-                    padding: '1.2rem',
+                    borderRadius: '0.9rem',
+                    padding: '0.9rem',
                     textAlign: 'center',
                     width: '100%',
                 }}>
                     <p style={{
                         margin: 0,
-                        fontSize: '0.95rem',
+                        fontSize: '0.82rem',
                         color: t.title,
                         fontWeight: 600,
                         lineHeight: 1.5,
@@ -276,8 +276,8 @@ export default function Statistics({
                     <button
                         onClick={onNewSession}
                         style={{
-                            padding: '1rem',
-                            fontSize: '1.05rem',
+                            padding: '0.8rem',
+                            fontSize: '0.95rem',
                             fontWeight: 700,
                             borderRadius: '1rem',
                             border: 'none',
@@ -299,8 +299,8 @@ export default function Statistics({
                     <button
                         onClick={onBackToTimer}
                         style={{
-                            padding: '1rem',
-                            fontSize: '1.05rem',
+                            padding: '0.8rem',
+                            fontSize: '0.95rem',
                             fontWeight: 600,
                             borderRadius: '1rem',
                             border: `2px solid ${t.border}`,
