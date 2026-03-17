@@ -68,11 +68,6 @@ export default function Login({ onLoginSuccess }: LoginProps) {
                 width: 'min(90vw, 380px)',
                 position: 'relative',
             }}>
-                {/* Mascot greeting */}
-                <div style={{ fontSize: '3.5rem', animation: 'cfloat 3.5s ease-in-out infinite' }}>
-                    🐾☁️
-                </div>
-
                 {/* Title */}
                 <h1 style={{
                     margin: 0,
@@ -176,20 +171,11 @@ export default function Login({ onLoginSuccess }: LoginProps) {
                             e.currentTarget.style.boxShadow = '0 4px 18px rgba(116,192,252,0.45)';
                         }}
                     >
-                        Let's Begin ✨
+                        Let's Begin
                     </button>
                 </form>
 
-                {/* Footer note */}
-                <p style={{
-                    margin: 0,
-                    fontSize: '0.75rem',
-                    color: '#9CADC4',
-                    textAlign: 'center',
-                    marginTop: '0.8rem',
-                }}>
-                    25 min focus × 4 = 1 long break 🎯
-                </p>
+
             </div>
         </div>
     );

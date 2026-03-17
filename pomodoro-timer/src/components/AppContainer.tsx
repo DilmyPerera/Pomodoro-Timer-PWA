@@ -4,11 +4,20 @@ import { useState, useEffect } from 'react';
 import Login from './Login';
 import Header from './Header';
 import Timer from './Timer';
+import Statistics from './Statistics';
+
+interface SessionData {
+    totalStudyMinutes: number;
+    totalBreakMinutes: number;
+    completedPomodoros: number;
+}
 
 export default function AppContainer() {
     const [userName, setUserName] = useState<string | null>(null);
     const [isDark, setIsDark] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [showStats, setShowStats] = useState(false);
+    const [sessionData, setSessionData] = useState<SessionData | null>(null);
 
     // Load theme and name preferences on mount
     useEffect(() => {
@@ -48,6 +57,21 @@ export default function AppContainer() {
         });
     };
 
+    const handleEndSession = (data: SessionData) => {
+        setSessionData(data);
+        setShowStats(true);
+    };
+
+    const handleBackToTimer = () => {
+        setShowStats(false);
+    };
+
+    const handleNewSession = () => {
+        setShowStats(false);
+        setSessionData(null);
+        // Timer will reset automatically on remount with new key
+    };
+
     if (isLoading) {
         return null; // or a loading spinner
     }
@@ -56,10 +80,24 @@ export default function AppContainer() {
         return <Login onLoginSuccess={handleLoginSuccess} />;
     }
 
+    if (showStats && sessionData) {
+        return (
+            <Statistics
+                userName={userName}
+                isDark={isDark}
+                totalStudyMinutes={sessionData.totalStudyMinutes}
+                totalBreakMinutes={sessionData.totalBreakMinutes}
+                completedPomodoros={sessionData.completedPomodoros}
+                onBackToTimer={handleBackToTimer}
+                onNewSession={handleNewSession}
+            />
+        );
+    }
+
     return (
         <>
             <Header userName={userName} isDark={isDark} onToggleTheme={toggleTheme} />
-            <Timer isDark={isDark} />
+            <Timer isDark={isDark} onEndSession={handleEndSession} />
         </>
     );
 }

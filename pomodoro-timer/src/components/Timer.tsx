@@ -97,13 +97,23 @@ function Sparkle({ style }: { style?: CSSProperties }) {
 // ─────────────────────────────────────────────────────────────────
 // Main Component
 // ─────────────────────────────────────────────────────────────────
-export default function Timer({ isDark: initialIsDark }: { isDark: boolean }) {
+interface TimerProps {
+    isDark: boolean;
+    onEndSession?: (data: { totalStudyMinutes: number; totalBreakMinutes: number; completedPomodoros: number }) => void;
+}
+
+export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProps) {
     const [minutes, setMinutes] = useState(25);
     const [seconds, setSeconds] = useState(0);
     const [isActive, setIsActive] = useState(false);
     const [mode, setMode] = useState<'work' | 'short' | 'long'>('work');
     const [pomodoroCount, setPomodoroCount] = useState(0);
     const [msgIdx, setMsgIdx] = useState(0);
+
+    // Session tracking
+    const [totalStudyMinutes, setTotalStudyMinutes] = useState(0);
+    const [totalBreakMinutes, setTotalBreakMinutes] = useState(0);
+    const [sessionStartTime] = useState(Date.now());
 
     // Use the isDark prop directly (no theme toggle needed here)
     const isDark = initialIsDark;
@@ -130,7 +140,10 @@ export default function Timer({ isDark: initialIsDark }: { isDark: boolean }) {
             if (seconds === 0) {
                 if (minutes === 0) {
                     setIsActive(false);
+
+                    // Track completed session time
                     if (mode === 'work') {
+                        setTotalStudyMinutes(prev => prev + 25);
                         const newCount = pomodoroCount + 1;
                         if (newCount >= 4) {
                             setPomodoroCount(0);
@@ -145,11 +158,18 @@ export default function Timer({ isDark: initialIsDark }: { isDark: boolean }) {
                             setSeconds(0);
                             alert(`Pomodoro ${newCount}/4 done! Take a short break.`);
                         }
-                    } else {
+                    } else if (mode === 'short') {
+                        setTotalBreakMinutes(prev => prev + 5);
                         setMode('work');
                         setMinutes(25);
                         setSeconds(0);
                         alert('Break over! Back to work!');
+                    } else if (mode === 'long') {
+                        setTotalBreakMinutes(prev => prev + 20);
+                        setMode('work');
+                        setMinutes(25);
+                        setSeconds(0);
+                        alert('Long break over! Ready for another session?');
                     }
                 } else {
                     setMinutes(minutes - 1);
@@ -400,6 +420,54 @@ export default function Timer({ isDark: initialIsDark }: { isDark: boolean }) {
                     </button>
                 </div>
             </div>
+
+            {/* End Session Button - Page Level Bottom Corner */}
+            <button
+                onClick={() => {
+                    if (onEndSession) {
+                        onEndSession({
+                            totalStudyMinutes,
+                            totalBreakMinutes,
+                            completedPomodoros: pomodoroCount,
+                        });
+                    }
+                }}
+                style={{
+                    position: 'fixed',
+                    bottom: '2rem',
+                    right: '2rem',
+                    padding: '0.75rem 1.5rem',
+                    fontSize: '0.95rem',
+                    fontWeight: 600,
+                    borderRadius: '9999px',
+                    border: `2px solid ${t.border}`,
+                    background: isDark ? 'rgba(22,18,38,0.85)' : 'rgba(255,255,255,0.85)',
+                    color: t.accent,
+                    cursor: 'pointer',
+                    boxShadow: isDark
+                        ? `0 4px 16px ${t.accent}33`
+                        : '0 2px 12px rgba(116,192,252,0.25)',
+                    transition: 'all 0.3s ease',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    zIndex: 100,
+                }}
+                onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'scale(1.08)';
+                    e.currentTarget.style.boxShadow = isDark
+                        ? `0 6px 20px ${t.accent}55`
+                        : '0 4px 16px rgba(116,192,252,0.4)';
+                }}
+                onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                    e.currentTarget.style.boxShadow = isDark
+                        ? `0 4px 16px ${t.accent}33`
+                        : '0 2px 12px rgba(116,192,252,0.25)';
+                }}
+                title="End your study session and view statistics"
+            >
+                End Session
+            </button>
         </div>
     );
 }
