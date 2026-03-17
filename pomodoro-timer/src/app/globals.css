@@ -12,15 +12,66 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
+}
+
+/* ── Cinnamoroll animations ── */
+@keyframes cfloat {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-12px);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes cdrift {
+
+  0%,
+  100% {
+    transform: translateX(0px) translateY(0px);
+  }
+
+  33% {
+    transform: translateX(14px) translateY(-7px);
+  }
+
+  66% {
+    transform: translateX(-9px) translateY(-11px);
+  }
+}
+
+/* ── Kuromi animations ── */
+@keyframes kfloat {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-16px) rotate(9deg);
+  }
+}
+
+/* ── Progress dot pulse ── */
+@keyframes dotpulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.55;
+    transform: scale(1.28);
+  }
 }
