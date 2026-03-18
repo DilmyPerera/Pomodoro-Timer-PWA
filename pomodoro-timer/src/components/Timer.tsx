@@ -1,7 +1,7 @@
 // src/components/Timer.tsx
 'use client';
 
-import { useState, useEffect, useCallback, CSSProperties } from 'react';
+import { useState, useEffect, useCallback, useRef, CSSProperties } from 'react';
 
 // ─────────────────────────────────────────────────────────────────
 // Theme Palettes
@@ -122,6 +122,7 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
     const [isOnline, setIsOnline] = useState(true);
     const [isEditingTime, setIsEditingTime] = useState(false);
     const [timeInput, setTimeInput] = useState('');
+    const alarmAudioRef = useRef<HTMLAudioElement | null>(null);
 
     // Session tracking
     const [totalStudyMinutes, setTotalStudyMinutes] = useState(0);
@@ -155,6 +156,18 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
         };
     }, []);
 
+    useEffect(() => {
+        alarmAudioRef.current = new Audio('/audio/track01.mp3');
+        alarmAudioRef.current.preload = 'auto';
+
+        return () => {
+            if (alarmAudioRef.current) {
+                alarmAudioRef.current.pause();
+                alarmAudioRef.current = null;
+            }
+        };
+    }, []);
+
     // ── Countdown ──
     const formatClock = (totalSeconds: number) => {
         const safe = Math.max(0, totalSeconds);
@@ -185,6 +198,39 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
 
     const displayTime = formatClock(timeLeft);
 
+    const playAlarm = useCallback(() => {
+        const alarm = alarmAudioRef.current;
+        if (!alarm) return;
+
+        alarm.currentTime = 0;
+        void alarm.play().catch(() => {
+            // Ignore autoplay rejection if browser blocks background audio.
+        });
+    }, []);
+
+    const stopAlarm = useCallback(() => {
+        const alarm = alarmAudioRef.current;
+        if (!alarm) return;
+
+        alarm.pause();
+        alarm.currentTime = 0;
+        alarm.loop = false;
+    }, []);
+
+    const notifyWithAlarm = useCallback((message: string) => {
+        const alarm = alarmAudioRef.current;
+        if (alarm) {
+            alarm.loop = true;
+            playAlarm();
+        }
+
+        try {
+            alert(message);
+        } finally {
+            stopAlarm();
+        }
+    }, [playAlarm, stopAlarm]);
+
     const handleSessionComplete = useCallback(() => {
         if (mode === 'work') {
             setTotalStudyMinutes(prev => prev + Math.round(modeDurations.work / 60));
@@ -193,13 +239,13 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
                 if (newCount >= 4) {
                     setMode('long');
                     setTimeLeft(modeDurations.long);
-                    alert('Great job! You completed 4 Pomodoros. Time for a long break!');
+                    notifyWithAlarm('Great job! You completed 4 Pomodoros. Time for a long break!');
                     return 0;
                 }
 
                 setMode('short');
                 setTimeLeft(modeDurations.short);
-                alert(`Pomodoro ${newCount}/4 done! Take a short break.`);
+                notifyWithAlarm(`Pomodoro ${newCount}/4 done! Take a short break.`);
                 return newCount;
             });
             return;
@@ -209,15 +255,15 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
             setTotalBreakMinutes(prev => prev + Math.round(modeDurations.short / 60));
             setMode('work');
             setTimeLeft(modeDurations.work);
-            alert('Break over! Back to work!');
+            notifyWithAlarm('Break over! Back to work!');
             return;
         }
 
         setTotalBreakMinutes(prev => prev + Math.round(modeDurations.long / 60));
         setMode('work');
         setTimeLeft(modeDurations.work);
-        alert('Long break over! Ready for another session?');
-    }, [mode, modeDurations]);
+        notifyWithAlarm('Long break over! Ready for another session?');
+    }, [mode, modeDurations, notifyWithAlarm]);
 
     useEffect(() => {
         if (!isActive) return;
