@@ -1,7 +1,7 @@
 // src/components/Timer.tsx
 'use client';
 
-import { useState, useEffect, CSSProperties } from 'react';
+import { useState, useEffect, useCallback, CSSProperties } from 'react';
 
 // ─────────────────────────────────────────────────────────────────
 // Theme Palettes
@@ -103,13 +103,25 @@ interface TimerProps {
 }
 
 export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProps) {
-    const [minutes, setMinutes] = useState(25);
-    const [seconds, setSeconds] = useState(0);
+    const DEFAULT_MODE_SECONDS = {
+        work: 25 * 60,
+        short: 5 * 60,
+        long: 20 * 60,
+    } as const;
+
+    const [modeDurations, setModeDurations] = useState<Record<'work' | 'short' | 'long', number>>({
+        work: DEFAULT_MODE_SECONDS.work,
+        short: DEFAULT_MODE_SECONDS.short,
+        long: DEFAULT_MODE_SECONDS.long,
+    });
+    const [timeLeft, setTimeLeft] = useState(DEFAULT_MODE_SECONDS.work);
     const [isActive, setIsActive] = useState(false);
     const [mode, setMode] = useState<'work' | 'short' | 'long'>('work');
     const [pomodoroCount, setPomodoroCount] = useState(0);
     const [msgIdx, setMsgIdx] = useState(0);
     const [isOnline, setIsOnline] = useState(true);
+    const [isEditingTime, setIsEditingTime] = useState(false);
+    const [timeInput, setTimeInput] = useState('');
 
     // Session tracking
     const [totalStudyMinutes, setTotalStudyMinutes] = useState(0);
@@ -144,71 +156,121 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
     }, []);
 
     // ── Countdown ──
-    const displayTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    const formatClock = (totalSeconds: number) => {
+        const safe = Math.max(0, totalSeconds);
+        const mins = Math.floor(safe / 60);
+        const secs = safe % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const parseClockInput = (input: string) => {
+        const raw = input.trim();
+        if (!raw) return null;
+
+        if (/^\d+$/.test(raw)) {
+            const mins = Number(raw);
+            if (!Number.isFinite(mins)) return null;
+            return Math.min(Math.max(mins * 60, 1), 5999);
+        }
+
+        const mmss = raw.match(/^(\d{1,2}):(\d{1,2})$/);
+        if (!mmss) return null;
+
+        const mins = Number(mmss[1]);
+        const secs = Number(mmss[2]);
+        if (!Number.isFinite(mins) || !Number.isFinite(secs) || secs > 59) return null;
+
+        return Math.min(Math.max(mins * 60 + secs, 1), 5999);
+    };
+
+    const displayTime = formatClock(timeLeft);
+
+    const handleSessionComplete = useCallback(() => {
+        if (mode === 'work') {
+            setTotalStudyMinutes(prev => prev + Math.round(modeDurations.work / 60));
+            setPomodoroCount(prev => {
+                const newCount = prev + 1;
+                if (newCount >= 4) {
+                    setMode('long');
+                    setTimeLeft(modeDurations.long);
+                    alert('Great job! You completed 4 Pomodoros. Time for a long break!');
+                    return 0;
+                }
+
+                setMode('short');
+                setTimeLeft(modeDurations.short);
+                alert(`Pomodoro ${newCount}/4 done! Take a short break.`);
+                return newCount;
+            });
+            return;
+        }
+
+        if (mode === 'short') {
+            setTotalBreakMinutes(prev => prev + Math.round(modeDurations.short / 60));
+            setMode('work');
+            setTimeLeft(modeDurations.work);
+            alert('Break over! Back to work!');
+            return;
+        }
+
+        setTotalBreakMinutes(prev => prev + Math.round(modeDurations.long / 60));
+        setMode('work');
+        setTimeLeft(modeDurations.work);
+        alert('Long break over! Ready for another session?');
+    }, [mode, modeDurations]);
 
     useEffect(() => {
         if (!isActive) return;
         // Note: setInterval can be throttled/paused in inactive tabs.
         // PWA offline caching still works, but timer precision may drift in background.
         const interval = setInterval(() => {
-            if (seconds === 0) {
-                if (minutes === 0) {
+            setTimeLeft(prev => {
+                if (prev <= 1) {
                     setIsActive(false);
-
-                    // Track completed session time
-                    if (mode === 'work') {
-                        setTotalStudyMinutes(prev => prev + 25);
-                        const newCount = pomodoroCount + 1;
-                        if (newCount >= 4) {
-                            setPomodoroCount(0);
-                            setMode('long');
-                            setMinutes(20);
-                            setSeconds(0);
-                            alert('Great job! You completed 4 Pomodoros. Time for a long break! (20 min)');
-                        } else {
-                            setPomodoroCount(newCount);
-                            setMode('short');
-                            setMinutes(5);
-                            setSeconds(0);
-                            alert(`Pomodoro ${newCount}/4 done! Take a short break.`);
-                        }
-                    } else if (mode === 'short') {
-                        setTotalBreakMinutes(prev => prev + 5);
-                        setMode('work');
-                        setMinutes(25);
-                        setSeconds(0);
-                        alert('Break over! Back to work!');
-                    } else if (mode === 'long') {
-                        setTotalBreakMinutes(prev => prev + 20);
-                        setMode('work');
-                        setMinutes(25);
-                        setSeconds(0);
-                        alert('Long break over! Ready for another session?');
-                    }
-                } else {
-                    setMinutes(minutes - 1);
-                    setSeconds(59);
+                    handleSessionComplete();
+                    return 0;
                 }
-            } else {
-                setSeconds(seconds - 1);
-            }
+
+                return prev - 1;
+            });
         }, 1000);
         return () => clearInterval(interval);
-    }, [isActive, minutes, seconds, mode, pomodoroCount]);
+    }, [isActive, handleSessionComplete]);
 
-    const toggleTimer = () => setIsActive(a => !a);
+    const saveEditedTime = () => {
+        const parsedSeconds = parseClockInput(timeInput);
+        if (parsedSeconds === null) {
+            setTimeInput(formatClock(timeLeft));
+            setIsEditingTime(false);
+            return;
+        }
+
+        setModeDurations(prev => ({ ...prev, [mode]: parsedSeconds }));
+        setTimeLeft(parsedSeconds);
+        setIsEditingTime(false);
+    };
+
+    const cancelEditingTime = () => {
+        setTimeInput(formatClock(timeLeft));
+        setIsEditingTime(false);
+    };
+
+    const toggleTimer = () => {
+        if (isEditingTime) saveEditedTime();
+        setIsActive(a => !a);
+    };
 
     const resetTimer = () => {
         setIsActive(false);
-        setMinutes(mode === 'work' ? 25 : mode === 'short' ? 5 : 20);
-        setSeconds(0);
+        setIsEditingTime(false);
+        setTimeLeft(modeDurations[mode]);
     };
 
     const changeMode = (m: 'work' | 'short' | 'long') => {
         setMode(m);
         setIsActive(false);
-        setMinutes(m === 'work' ? 25 : m === 'short' ? 5 : 20);
-        setSeconds(0);
+        setIsEditingTime(false);
+        setTimeLeft(modeDurations[m]);
     };
 
     // ─────────────────────────────────────────────────────────────
@@ -379,20 +441,62 @@ export default function Timer({ isDark: initialIsDark, onEndSession }: TimerProp
                 </div>
 
                 {/* Large timer display */}
-                <div style={{
-                    fontSize: 'clamp(4rem, 16vw, 6rem)',
-                    fontWeight: 800,
-                    fontFamily: '"Courier New", monospace',
-                    letterSpacing: '0.06em',
-                    color: t.timerColor,
-                    textShadow: isDark
-                        ? `0 0 30px ${t.timerGlow}, 0 0 64px ${t.timerGlow}`
-                        : `0 2px 16px ${t.timerGlow}`,
-                    lineHeight: 1,
-                    userSelect: 'none',
-                    transition: 'color 0.7s, text-shadow 0.7s',
-                }}>
-                    {displayTime}
+                <div
+                    style={{
+                        fontSize: 'clamp(4rem, 16vw, 6rem)',
+                        fontWeight: 800,
+                        fontFamily: '"Courier New", monospace',
+                        letterSpacing: '0.06em',
+                        color: t.timerColor,
+                        textShadow: isDark
+                            ? `0 0 30px ${t.timerGlow}, 0 0 64px ${t.timerGlow}`
+                            : `0 2px 16px ${t.timerGlow}`,
+                        lineHeight: 1,
+                        userSelect: 'none',
+                        transition: 'color 0.7s, text-shadow 0.7s',
+                        cursor: isActive ? 'default' : 'text',
+                    }}
+                    onClick={() => {
+                        if (isActive) return;
+                        setTimeInput(displayTime);
+                        setIsEditingTime(true);
+                    }}
+                    title={isActive ? 'Pause timer to edit time' : 'Click to edit timer'}
+                >
+                    {isEditingTime ? (
+                        <input
+                            autoFocus
+                            value={timeInput}
+                            onChange={e => setTimeInput(e.target.value)}
+                            onBlur={saveEditedTime}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                    saveEditedTime();
+                                } else if (e.key === 'Escape') {
+                                    cancelEditingTime();
+                                }
+                            }}
+                            inputMode="numeric"
+                            aria-label="Edit timer in mm:ss"
+                            placeholder="MM:SS"
+                            style={{
+                                width: '100%',
+                                maxWidth: '8ch',
+                                background: 'transparent',
+                                border: `2px solid ${t.border}`,
+                                borderRadius: '0.4rem',
+                                color: t.timerColor,
+                                textAlign: 'center',
+                                fontSize: 'inherit',
+                                fontWeight: 'inherit',
+                                fontFamily: 'inherit',
+                                letterSpacing: 'inherit',
+                                outline: 'none',
+                            }}
+                        />
+                    ) : (
+                        displayTime
+                    )}
                 </div>
 
                 {/* Break label — only shown during breaks */}
